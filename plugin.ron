@@ -1,0 +1,13 @@
+(
+    name: "Interact with Music Player Daemon",
+    description: "The MPD plugin",
+    query: (
+        regex: "^(mpd )+",
+        help: "mpd",
+        isolate: true,
+        no_sort: true,
+    ),
+    bin: (path: "mpd"),
+    icon: Name("org.gnome.Music.svg"),
+    history: false,
+)
