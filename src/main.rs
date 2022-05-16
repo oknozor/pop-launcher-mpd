@@ -1,11 +1,11 @@
 use mpd_client::commands::responses::{Empty, Song};
 use mpd_client::commands::{Add, ListAllIn, Play};
 use mpd_client::{Client, CommandError};
+use pop_launcher_toolkit::launcher::{Indice, PluginResponse, PluginSearchResult};
+use pop_launcher_toolkit::plugin_trait::{async_trait, PluginExt};
 use std::error::Error;
 use std::sync::{Arc, Mutex};
 use tokio::net::TcpStream;
-use pop_launcher_toolkit::launcher::{Indice, PluginResponse, PluginSearchResult};
-use pop_launcher_toolkit::plugin_trait::{async_trait, PluginExt};
 
 pub struct MpdPlugin {
     client: Arc<Client>,
@@ -31,9 +31,9 @@ impl MpdPlugin {
             song.url.clone()
         };
 
-        let son_id = self.client.command(Add::uri(song_url)).await;
+        let song_id = self.client.command(Add::uri(song_url)).await;
 
-        match son_id {
+        match song_id {
             Ok(song_id) => self.client.command(Play::song(song_id)).await,
             Err(err) => Err(err),
         }
@@ -42,31 +42,6 @@ impl MpdPlugin {
 
 #[async_trait]
 impl PluginExt for MpdPlugin {
-    async fn activate(&mut self, id: Indice) {
-        self.play(id).await.expect("Failed to play song");
-        self.respond_with(PluginResponse::Close).await
-    }
-
-    async fn activate_context(&mut self, _id: Indice, _context: Indice) {
-        // not needed
-    }
-
-    async fn complete(&mut self, _id: Indice) {
-        // not needed
-    }
-
-    async fn context(&mut self, _id: Indice) {
-        // not needed
-    }
-
-    fn exit(&mut self) {
-        // not needed
-    }
-
-    async fn interrupt(&mut self) {
-        // not needed
-    }
-
     fn name(&self) -> &str {
         "mpd"
     }
@@ -91,6 +66,31 @@ impl PluginExt for MpdPlugin {
         }
 
         self.respond_with(PluginResponse::Finished).await;
+    }
+
+    async fn activate(&mut self, id: Indice) {
+        self.play(id).await.expect("Failed to play song");
+        self.respond_with(PluginResponse::Close).await
+    }
+
+    async fn activate_context(&mut self, _id: Indice, _context: Indice) {
+        // not needed
+    }
+
+    async fn complete(&mut self, _id: Indice) {
+        // not needed
+    }
+
+    async fn context(&mut self, _id: Indice) {
+        // not needed
+    }
+
+    fn exit(&mut self) {
+        // not needed
+    }
+
+    async fn interrupt(&mut self) {
+        // not needed
     }
 
     async fn quit(&mut self, _id: Indice) {
